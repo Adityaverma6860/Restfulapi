@@ -1,68 +1,83 @@
-let data =[
-    {id:1,name:"Aditya",email:"kumaraditya5244@gmail.com"},
-    {id:2,name:"ravi",email:"kumarravi678@gmail.com"}
-]
+// Function to read all items from localStorage and display in the table
 function readAll() {
-    localStorage.setItem("object",JSON.stringify(data));
-    var tabledata = document.querySelector(".data_table");
+    let dataTable = document.querySelector(".data_table");
+    dataTable.innerHTML = ""; // Clear the table before populating
 
-    var object = localStorage.getItem('object');
-    var objectdata = JSON.parse(object);
+    let users = JSON.parse(localStorage.getItem("users")) || []; // Get data from localStorage or initialize empty array
 
-    var elements = "";
-    
-    objectdata.map(record => (
-         elements += `<tr>
-             <td>${record.name}</td>
-             <td>${record.email}</td>
-             <td>
-             <button class="edit" onclick={edit(${record.id})}>Edit</button>
-             <button class="delete" onclick={delet(${record.id})}>Delete</button>
-             </td>
-         </tr>`
+    users.forEach((user, index) => {
+        let row = `<tr>
+            <td>${user.name}</td>
+            <td>${user.email}</td>
+            <td>
+                 <button onclick="edit(${index})">Edit</button>
+                <button onclick="remove(${index})">Delete</button>
+            </td>
+        </tr>`;
+        dataTable.innerHTML += row;
+    });
+}
 
-    ))
-    tabledata.innerHTML = elements;
+// Function to create a new user and store in localStorage
+function create() {
+    let name = document.querySelector(".name").value;
+    let email = document.querySelector(".email").value;
 
-    function delet(id){
-        data.splice(rec =>rec.id !==id);
-        readAll();
+    if (name && email) { // Ensure both fields are filled
+        let users = JSON.parse(localStorage.getItem("users")) || []; // Fetch existing users or initialize empty array
+        users.push({ name, email }); // Add new user
+
+        localStorage.setItem("users", JSON.stringify(users)); // Save updated users back to localStorage
+
+        readAll(); // Refresh the list to display the new entry
+
+        // Clear input fields
+        document.querySelector(".name").value = "";
+        document.querySelector(".email").value = "";
+    } else {
+        alert("Please enter both name and email.");
     }
 }
-function create(){
-    document.querySelector(".create_form").style.display="block";
-    document.querySelector(".add_div").style.display="none";
 
+// Function to edit user (populating the update form)
+function edit(index) {
+    let users = JSON.parse(localStorage.getItem("users"));
+    document.querySelector(".id").value = index;
+    document.querySelector(".uname").value = users[index].name;
+    document.querySelector(".uemail").value = users[index].email;
+
+    // Show update form, hide create form (optional styling adjustment)
+    document.querySelector(".create_form").style.display = "none";
+    document.querySelector(".update_form").style.display = "block";
 }
-function add() {
-    var name = document.querySelector(".name").value;
-    var email = document.querySelector(".email").value;
 
+// Function to update the user details
+function update() {
+    let index = document.querySelector(".id").value;
+    let name = document.querySelector(".uname").value;
+    let email = document.querySelector(".uemail").value;
 
+    let users = JSON.parse(localStorage.getItem("users"));
+    users[index] = { name, email }; // Update the user at the specified index
 
-    var newObj ={id: 3,name: name,email: email};
-    data.push(newObj);
+    localStorage.setItem("users", JSON.stringify(users)); // Save updated data back to localStorage
 
-    document.querySelector(".create_form").style.display="none";
-    document.querySelector(".add_div").style.display="block";
+    readAll(); // Refresh the list
 
-    readAll();
+    // Reset forms and visibility
+    document.querySelector(".create_form").style.display = "block";
+    document.querySelector(".update_form").style.display = "none";
 }
-function edit(id) {
-    document.querySelector('.update_form').style.display ="block";
-    var obj = data.find(rec =>rec.id === id);
-    document.querySelector('.uname').value = obj.name;
-    document.querySelector('.uemail').value = obj.email;
-    document.querySelector('.id').value = obj.id;
 
-}  
-function update(){
-    var id = parseInt(document.querySelector('.id').value);
-    var name =document.querySelector('.uname').value;
-    var email =document.querySelector('.uemail').value;
-    var index = data.findIndex(req=>rec.id === id);
-    data[index]={id, name,email};
-    document.querySelector('.update_form').style.display ="none";
+// Function to delete a user
+function remove(index) {
+    let users = JSON.parse(localStorage.getItem("users"));
+    users.splice(index, 1); // Remove the user at the specified index
 
-    readAll();
+    localStorage.setItem("users", JSON.stringify(users)); // Save updated data back to localStorage
+
+    readAll(); // Refresh the list
 }
+
+// On load, read all data from localStorage and display it
+document.addEventListener("DOMContentLoaded", readAll);
