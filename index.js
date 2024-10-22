@@ -1,13 +1,4 @@
-// const connectDB=async()=>{
-// mongoose.connect(' mongodb://127.0.0.1:27017/merndb');
-// const ProductSchema =new mongoose.Schema({});
-// const product =mongoose.model('product',ProductSchema);
-// const data = await product.find();     
-// console.warn(data);         
-// }
-// connectDB();
-// app.listen(5000) 
-
+// RestFul Api
 //1. Data ko insert kiya gya hai( body se ) by postman 
 
 const express = require("express");
